@@ -1,0 +1,47 @@
+services:
+  payload:
+    build: ./
+    image: node:18-alpine
+    ports:
+      - '3000:3000'
+    volumes:
+      - .:/home/node/app
+      - node_modules:/home/node/app/node_modules
+    working_dir: /home/node/app/
+    command: sh -c "yarn install && yarn dev"
+    depends_on:
+      - mongo
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URI=mongodb://mongo:27017/indocor-backs
+      - PAYLOAD_SECRET=your-secret-key
+    env_file:
+      - .env
+    
+  frontend:
+    build: C:\Users\USER\indocor-landing-page
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=development
+      - API_URL=http://payload:3000/api
+    depends_on:
+      - payload
+    env_file:
+      - .env
+
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - '27017:27017'
+    command:
+      - --storageEngine=wiredTiger
+    volumes:
+      - mongo-data:/data/db
+    logging:
+      driver: none
+
+volumes:
+  mongo-data:
+  node_modules:
