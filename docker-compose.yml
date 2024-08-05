@@ -1,6 +1,29 @@
+version: '3'
+
 services:
+  mongo:
+    container_name: indocor-backs-mongo-1
+    image: mongo:latest
+    restart: on-failure
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${DATABASE_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${DATABASE_PASS}
+      MONGO_INITDB_DATABASE: ${DATABASE_NAME}
+    ports:
+      - '27017:27017'
+    volumes:
+      - ./docker/volumes:/data/db
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    env_file:
+      - .env
+
   payload:
     build: ./
+    container_name: indocor-backs-payload-1
     image: node:18-alpine
     ports:
       - '3000:3000'
@@ -13,34 +36,23 @@ services:
       - mongo
     environment:
       - NODE_ENV=development
-      - DATABASE_URI=mongodb://iccp:iccpform@mongo:27017/indocor-database?authSource=admin&directConnection=true&authMechanism=DEFAULT
-      - PAYLOAD_SECRET=your-secret-key
+      - DATABASE_URI=mongodb://${DATABASE_USER}:${DATABASE_PASS}@mongo:27017/${DATABASE_NAME}?authSource=admin
+      - PAYLOAD_SECRET=${PAYLOAD_SECRET}
     env_file:
       - .env
     
   frontend:
     build: C:\Users\USER\indocor-landing-page
+    container_name: indocor-backs-frontend-1
     ports:
-      - "3001:3000"
+      - '3001:3000'
     environment:
       - NODE_ENV=development
-      - API_URL=http://payload:3000/api
+      - API_URL=http://localhost:3000
     depends_on:
       - payload
     env_file:
       - .env
-
-
-  mongo:
-    image: mongo:latest
-    ports:
-      - '27017:27017'
-    command:
-      - --storageEngine=wiredTiger
-    volumes:
-      - mongo-data:/data/db
-    logging:
-      driver: none
 
 volumes:
   mongo-data:
