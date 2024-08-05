@@ -13,7 +13,7 @@ services:
       - mongo
     environment:
       - NODE_ENV=development
-      - DATABASE_URI=mongodb://mongo:27017/indocor-backs
+      - DATABASE_URI=mongodb://iccp:iccpform@mongo:27017/indocor-database?authSource=admin&directConnection=true&authMechanism=DEFAULT
       - PAYLOAD_SECRET=your-secret-key
     env_file:
       - .env
