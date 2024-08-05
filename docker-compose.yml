@@ -12,7 +12,10 @@ services:
     ports:
       - '27017:27017'
     volumes:
-      - ./docker/volumes:/data/db
+      - mongo-data:/data/db
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js 
+    networks:
+      - default
     logging:
       driver: "json-file"
       options:
@@ -36,11 +39,13 @@ services:
       - mongo
     environment:
       - NODE_ENV=development
-      - DATABASE_URI=mongodb://iccp:iccpform@mongo:27017/indocor-database?authSource=admin&directConnection=true&authMechanism=DEFAULT'
+      - DATABASE_URI=mongodb://${DATABASE_USER}:${DATABASE_PASS}@mongo:27017/${DATABASE_NAME}?authSource=admin
       - PAYLOAD_SECRET=${PAYLOAD_SECRET}
+    networks:
+      - default
     env_file:
       - .env
-    
+
   frontend:
     build: D:\indocor-landing-page
     container_name: indocor-backs-frontend-1
@@ -51,8 +56,14 @@ services:
       - API_URL=http://payload:3000
     depends_on:
       - payload
+    networks:
+      - default
     env_file:
       - .env
+
+networks:
+  default:
+    driver: bridge
 
 volumes:
   mongo-data:
