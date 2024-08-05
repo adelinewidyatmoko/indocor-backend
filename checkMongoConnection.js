@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const uri = process.env.DATABASE_URI || 'mongodb://iccp:iccpform@localhost:27017/indocor-database?authSource=admin';
+const uri = process.env.DATABASE_URI || 'mongodb://iccp:iccpform@mongo:27017/indocor-database?authSource=admin&directConnection=true&authMechanism=DEFAULT';
 
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {

@@ -36,19 +36,19 @@ services:
       - mongo
     environment:
       - NODE_ENV=development
-      - DATABASE_URI=mongodb://${DATABASE_USER}:${DATABASE_PASS}@mongo:27017/${DATABASE_NAME}?authSource=admin
+      - DATABASE_URI=mongodb://iccp:iccpform@mongo:27017/indocor-database?authSource=admin&directConnection=true&authMechanism=DEFAULT'
       - PAYLOAD_SECRET=${PAYLOAD_SECRET}
     env_file:
       - .env
     
   frontend:
-    build: C:\Users\USER\indocor-landing-page
+    build: D:\indocor-landing-page
     container_name: indocor-backs-frontend-1
     ports:
       - '3001:3000'
     environment:
       - NODE_ENV=development
-      - API_URL=http://localhost:3000
+      - API_URL=http://payload:3000
     depends_on:
       - payload
     env_file:
