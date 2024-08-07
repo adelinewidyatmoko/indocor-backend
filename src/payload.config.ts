@@ -8,9 +8,6 @@ import { buildConfig } from 'payload/config'
 
 import Accounts from './collections/Accounts'
 import Form from './collections/Forms'
-// import Foto from './collections/Foto'
-// import Bukti from './collections/Bukti'
-
 
 export default buildConfig({
   admin: {

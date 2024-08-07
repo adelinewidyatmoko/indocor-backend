@@ -47,7 +47,7 @@ services:
       - .env
 
   frontend:
-    build: D:\indocor-landing-page
+    build: ./indocor/indocor-landing-page
     container_name: indocor-backs-frontend-1
     ports:
       - '3001:3000'
