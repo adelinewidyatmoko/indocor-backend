@@ -5,66 +5,19 @@ services:
     container_name: indocor-backs-mongo-1
     image: mongo:latest
     restart: on-failure
+    command: [--auth]
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${DATABASE_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${DATABASE_PASS}
       MONGO_INITDB_DATABASE: ${DATABASE_NAME}
     ports:
-      - '27017:27017'
+      - ${DATABASE_PORT}:27017
+    expose:
+      - ${DATABASE_PORT}
     volumes:
-      - mongo-data:/data/db
-      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js 
-    networks:
-      - default
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
+      - ./docker/volumes/:/data/db
     env_file:
       - .env
-
-  payload:
-    build: ./
-    container_name: indocor-backs-payload-1
-    image: node:18-alpine
-    ports:
-      - '3000:3000'
-    volumes:
-      - .:/home/node/app
-      - node_modules:/home/node/app/node_modules
-    working_dir: /home/node/app/
-    command: sh -c "yarn install && yarn dev"
-    depends_on:
-      - mongo
-    environment:
-      - NODE_ENV=development
-      - DATABASE_URI=mongodb://${DATABASE_USER}:${DATABASE_PASS}@mongo:27017/${DATABASE_NAME}?authSource=admin
-      - PAYLOAD_SECRET=${PAYLOAD_SECRET}
-    networks:
-      - default
-    env_file:
-      - .env
-
-  frontend:
-    build: ./indocor/indocor-landing-page
-    container_name: indocor-backs-frontend-1
-    ports:
-      - '3001:3000'
-    environment:
-      - NODE_ENV=development
-      - API_URL=http://payload:3000
-    depends_on:
-      - payload
-    networks:
-      - default
-    env_file:
-      - .env
-
-networks:
-  default:
-    driver: bridge
 
 volumes:
   mongo-data:
-  node_modules:
